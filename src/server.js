@@ -24,10 +24,10 @@ app.use(routes(router));
 app.engine('handlebars', exphbs());
 
 app.set('view engine', 'handlebars');
-app.set('views', path.join(__dirname, './views'));
+app.set("views", "./src/views");
 
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use("/public", express.static("./src/public"));
 
 
 io.on('connection', async (socket) => {
