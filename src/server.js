@@ -1,67 +1,59 @@
 const express = require("express");
 var exphbs = require('express-handlebars');
-const routes = require("./routes/routes");
-const compression = require("compression");
-const cors = require("cors");
 
-const router = express.Router();
 const app = express();
+const router = express.Router();
+const { PORT } = require('./config/globals');
+const { getConnection } = require('./dao/db/connection');
+const routes = require("./routes/routes");
 
-const http = require('http'); 
+const http = require('http');
 const server = http.createServer(app);
 const {Server} = require('socket.io');
 const io = new Server(server);
-const path = require('path')
+
+const ProductoService = require("./services/producto");
+const MensajeService = require("./services/mensajes");
 
 app.use(express.urlencoded({extended: true}));
-
 app.use(express.json());
-app.use(cors());
-app.use(compression());
-
+app.use("/public", express.static("./src/public"));
 app.use(routes(router));
 
 app.engine('handlebars', exphbs());
-
-app.set('view engine', 'handlebars');
 app.set("views", "./src/views");
+app.set('view engine', 'handlebars');
 
 
-app.use("/public", express.static("./src/public"));
 
 
 io.on('connection', async (socket) => {
-  const ProductoService = require("./services/producto");
-  const MensajeService = require("./services/mensajes");
   productoService = new ProductoService();
   mensajeService = new MensajeService();
-
   let productosWs = await productoService.getAllProductos();
-  let mensajes = await mensajeService.getAllMensajes();
-
-  console.log(productosWs);
-
-  console.log("new connection", socket.id);
+  let mensajes = await mensajeService.getAllMensajes();  
 
   socket.emit('mensajes', { mensajes: await mensajeService.getAllMensajes() })
 
-  socket.on('nuevo-mensaje', (nuevoMensaje) => {    
+  socket.on('nuevo-mensaje', async (nuevoMensaje) => {    
     let elNuevoMensaje = {
       mensaje: nuevoMensaje.mensaje,
       hora: nuevoMensaje.hora,
       email: nuevoMensaje.email
     }
-    mensajeService.createMensaje(elNuevoMensaje);
+    await mensajeService.createMensaje(elNuevoMensaje);
 
     io.sockets.emit('recibir nuevoMensaje', [elNuevoMensaje])
   })
 
-  io.sockets.emit('productosWs', await productoService.getAllProductos() );
+  io.sockets.emit('productos', await productoService.getAllProductos() );
 
-  socket.on('producto-nuevo', data => {
-    //productosWs.push(data);
+  socket.on('producto-nuevo', async data => {
+    await productoService.createProducto(data);
   })
 
 });
 
-module.exports = app;
+getConnection().then(() =>
+  server.listen(PORT, () => console.log("server's up", PORT))
+);

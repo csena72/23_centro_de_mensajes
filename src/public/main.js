@@ -1,9 +1,11 @@
 var socket = io();
-socket.on('productosWs', data => {
+socket.on('productos', data => {
+    
     productosWs = JSON.stringify(data);            
 });
 
-function enviarProducto(e){            
+function enviarProducto(event){  
+             
     let producto = {
         title: document.getElementById("title").value, 
         price: document.getElementById("price").value, 

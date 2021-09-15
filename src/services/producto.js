@@ -11,7 +11,7 @@ module.exports = class {
     }
 
     async getAllProductos(){
-        return productoModel.find();
+        return productoModel.find().lean();
     }
 
     async updateProducto(id, productoUpdate){

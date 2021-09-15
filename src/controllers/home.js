@@ -1,5 +1,8 @@
-let productosWs = []; // esto va en sqlite
+const ProductoService = require("../services/producto");
 
-exports.homeRender = (req,resp) => {    
-    resp.render('home', {productosWs: productosWs});
+productoService = new ProductoService();
+
+exports.homeRender = async(req,resp) => {    
+    let productos = await productoService.getAllProductos();   
+    resp.render('home', {productos: productos});
 };
