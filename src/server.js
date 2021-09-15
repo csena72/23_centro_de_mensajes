@@ -35,18 +35,19 @@ io.on('connection', async (socket) => {
 
   socket.emit('mensajes', { mensajes: await mensajeService.getAllMensajes() })
 
-  socket.on('nuevo-mensaje', async (nuevoMensaje) => {    
-    let elNuevoMensaje = {
-      mensaje: nuevoMensaje.mensaje,
-      hora: nuevoMensaje.hora,
-      email: nuevoMensaje.email
+  socket.on('nuevo-mensaje', async (nuevoMensaje) => {
+    const { author, message } = nuevoMensaje; 
+    const elNuevoMensaje = {
+      author,
+      message,
     }
+    
     await mensajeService.createMensaje(elNuevoMensaje);
 
     io.sockets.emit('recibir nuevoMensaje', [elNuevoMensaje])
   })
 
-  io.sockets.emit('productos', await productoService.getAllProductos() );
+  io.sockets.emit('productos', await productoService.getAllProductos() ); 
 
   socket.on('producto-nuevo', async data => {
     await productoService.createProducto(data);
