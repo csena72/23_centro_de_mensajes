@@ -1,4 +1,3 @@
-//const socketchat = io();
 const emailTxt = document.querySelector("#email");
 const nameTxt = document.querySelector("#nombre");
 const lastNameTxt = document.querySelector("#apellido");
@@ -11,23 +10,10 @@ const messageTxt = document.querySelector("#mensaje");
 const sendBtn = document.querySelector("#enviar");
 
 const messages = document.querySelector("#mensajes");
-
-//Entidades
-const userSchema = new normalizr.schema.Entity("users");
-
-const entrySchema = new normalizr.schema.Entity("entries", {
-  author: userSchema,
-});
-const chatSchema = new normalizr.schema.Entity("chat", {
-  content: [entrySchema],
-});
+const { denormalizeMessages } = require("../utils/normalizer");
 
 socket.on("mensajes", (data) => {
-  const denormalized = normalizr.denormalize(
-    data.result,
-    chatSchema,
-    data.entities
-  );
+  const denormalized = denormalizeMessages(data);
   const normalizedLength = JSON.stringify(data).length;
   const denormalizedLength = JSON.stringify(denormalized).length;
   const compression = Math.round(
@@ -59,13 +45,7 @@ sendBtn.addEventListener("click", () => {
       },
       message: messageTxt.value,
     };
-    console.log(data);
+    
     socket.emit("nuevo-mensaje", data);
   }
 });
-
-const denormalizedData = denormalize(
-  normalizedData.result,
-  posts,
-  normalizedData.entities
-);

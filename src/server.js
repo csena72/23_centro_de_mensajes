@@ -33,6 +33,8 @@ io.on('connection', async (socket) => {
   let productosWs = await productoService.getAllProductos();
   let mensajes = await mensajeService.getAllMensajes();  
 
+  //console.log(mensajes)
+
   socket.emit('mensajes', { mensajes: await mensajeService.getAllMensajes() })
 
   socket.on('nuevo-mensaje', async (nuevoMensaje) => {
@@ -41,7 +43,7 @@ io.on('connection', async (socket) => {
       author,
       message,
     }
-    
+    console.log(nuevoMensaje);
     await mensajeService.createMensaje(elNuevoMensaje);
 
     io.sockets.emit('recibir nuevoMensaje', [elNuevoMensaje])

@@ -32,24 +32,24 @@ function addNewMessage(listaMensajes) {
     document.getElementById("mensajes").innerHTML +=  template({ mensajes: listaMensajes });
 }
 
-function enviarMensaje() {
-    let hora = moment().format('DD/MM/YYYY HH:mm:ss');
-    let mensaje = document.getElementById('mensaje').value;
-    let email = document.getElementById('email').value;
-    if (email.length > 1) {
-        socket.emit('nuevo-mensaje', {
-            email: email,
-            hora: hora,
-            mensaje: mensaje
-        })
-    } else {
-        alert('Debe ingresar un email')
-    }
-}
+// function enviarMensaje() {
+//     let hora = moment().format('DD/MM/YYYY HH:mm:ss');
+//     let mensaje = document.getElementById('mensaje').value;
+//     let email = document.getElementById('email').value;
+//     if (email.length > 1) {
+//         socket.emit('nuevo-mensaje', {
+//             email: email,
+//             hora: hora,
+//             mensaje: mensaje
+//         })
+//     } else {
+//         alert('Debe ingresar un email')
+//     }
+// }
 
-socket.on(`mensajes`, function(data) {                       
-    addAllMessages(data)
-})
+// socket.on(`mensajes`, function(data) {                       
+//     addAllMessages(data)
+// })
 
 socket.on('recibir nuevoMensaje', function(listaMensajes) {                                 
     addNewMessage(listaMensajes)

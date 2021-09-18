@@ -16,6 +16,15 @@ normalizeMessages = (msgs) => {
   return normal;
 };
 
+denormalizeMessages = (data) => {
+  const denormalized = normalizr.denormalize(
+    data.result,
+    chatSchema,
+    data.entities
+  );
+  return denormalized;
+}
+
 function print(objeto) {
   console.log(util.inspect(objeto, false, 12, true));
 }
